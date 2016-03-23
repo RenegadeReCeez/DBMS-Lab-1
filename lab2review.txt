@@ -1,0 +1,29 @@
+10 pts
+
+1. 
+
+Evidence looks ok.
+
+Good organization of screenshots.
+
+
+2.
+
+Sufficient knowledge of the terms primary key, candidate key, and superkey.
+
+The distinction between a primary key and candidate key is deficient. Remember
+that a primary key is also a candidate key. 
+
+
+3.
+
+Good example of datatypes and nulls. However, you started your essay with a
+question without a question mark, bummer.
+
+
+4.
+
+Very good explanations about the rules. 
+
+
+- Dr. Rivas
