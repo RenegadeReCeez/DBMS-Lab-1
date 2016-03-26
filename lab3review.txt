@@ -1,0 +1,42 @@
+9 pts
+
+Correct output for all queries
+Correct SQL statements
+SQL statements are readable
+
+Correct output for some queries
+Mostly correct SQL statements
+SQL statements are somewhat readable
+
+Recommendations: 
+ To improve your readability, write queries instead of this
+  SELECT *
+  FROM products
+  WHERE city != 'Dallas' AND city != 'Duluth' AND priceUSD >= 1;
+ do it like this:
+  SELECT *
+  FROM products
+  WHERE city != 'Dallas' 
+    AND city != 'Duluth' 
+    AND priceUSD >= 1;
+
+
+
+2. List the name and city of agents named Smith.
+
+Incorrect output
+- You are giving, [city,name] but you were asked to give [name,city]
+
+
+In general: 
+
+- Make sure you read all the instructions for queries really well.
+
+- Make sure you have semicolons at the end of each of your queries. 
+  Your query produced an error!
+   ERROR:  syntax error at or near "select"
+   LINE 1: ...t name, city from customers where city = 'Dallas' select nam...
+                                                                ^
+   
+
+- Dr. Rivas
