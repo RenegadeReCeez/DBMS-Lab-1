@@ -1,0 +1,464 @@
+DROP TABLE IF EXISTS people;
+DROP TABLE IF EXISTS cities;
+DROP TABLE IF EXISTS Employees;
+DROP TABLE IF EXISTS Arrestedpeople;
+DROP TABLE IF EXISTS cells;
+DROP TABLE IF EXISTS Officers;
+DROP TABLE IF EXISTS Equipment;
+DROP TABLE IF EXISTS PatrolRoutes;
+DROP TABLE IF EXISTS WorkingTimes;
+DROP TABLE IF EXISTS Areas;
+DROP TABLE IF EXISTS Cases;
+DROP TABLE IF EXISTS Evidence;
+
+CREATE TABLE cities (
+	Zipcode text NOT NULL UNIQUE, 
+	City text NOT NULL, 
+	PRIMARY KEY (Zipcode)
+);
+CREATE TABLE people (
+	Pid text NOT NULL UNIQUE, 
+	FirstName text NOT NULL, 
+	LastName text NOT NULL, 
+	DateOfBirth text NOT NULL, 
+	Address text NOT NULL, 
+	Zipcode text NOT NULL, 
+	FOREIGN KEY (Zipcode) REFERENCES cities(Zipcode), 
+	PRIMARY KEY (Pid, Zipcode)
+);
+CREATE TABLE Employees (
+	Eid text NOT NULL UNIQUE, 
+	DateEmployed text NOT NULL, 
+	DateUnemployed text, 
+	SalaryUSD text NOT NULL, 
+	Positions text NOT NULL, 
+	Pid text NOT NULL, 
+	FOREIGN KEY (Pid) REFERENCES people (Pid), 
+	PRIMARY KEY (Eid, Pid)
+);
+CREATE TABLE Officers (
+	Oid text NOT NULL UNIQUE, 
+	OnPatrol text NOT NULL, 
+	Armed text NOT NULL, 
+	Rank text NOT NULL, 
+	Eid text NOT NULL, 
+	FOREIGN KEY (Eid) REFERENCES Employees (Eid), 
+	PRIMARY KEY (Oid, Eid)
+);
+CREATE TABLE Areas (
+	Aid text NOT NULL UNIQUE, 
+	AreaDescription text NOT NULL, 
+	PRIMARY KEY (Aid)
+);
+CREATE TABLE cells (
+	CEid text NOT NULL UNIQUE, 
+	Aid text NOT NULL, 
+	FOREIGN KEY (Aid) REFERENCES Areas (Aid), 
+	PRIMARY KEY (CEid, Aid)
+);
+CREATE TABLE Arrestedpeople (
+	APid text NOT NULL UNIQUE, 
+	Height text NOT NULL, 
+	Weight text NOT NULL, 
+	HairColor text NOT NULL, 
+	CEid text NOT NULL, 
+	Pid text NOT NULL, 
+	FOREIGN KEY (CEid) REFERENCES cells (CEid), 
+	FOREIGN KEY (Pid) REFERENCES people (Pid), 
+	PRIMARY KEY (APid, Pid, CEid)
+);
+CREATE TABLE Equipment (
+	EQid text NOT NULL UNIQUE, 
+	TypeOfEquipment text NOT NULL, 
+	Working text NOT NULL, 
+	InUse text NOT NULL, 
+	Oid text NOT NULL, 
+	Aid text NOT NULL, 
+	FOREIGN KEY (Oid) REFERENCES Officers (Oid), 
+	FOREIGN KEY (Aid) REFERENCES Areas (Aid),  
+	PRIMARY KEY (EQid, Oid, Aid)
+);
+CREATE TABLE WorkingTimes (
+	WTid text NOT NULL UNIQUE, 
+	Hours text NOT NULL, 
+	Eid text NOT NULL, 
+	Aid text NOT NULL, 
+	FOREIGN KEY (Eid) REFERENCES Employees (Eid), 
+	FOREIGN KEY (Aid) REFERENCES Areas (Aid), 
+	PRIMARY KEY (WTid, Eid, Aid)
+);
+CREATE TABLE Cases (
+	Cid text NOT NULL UNIQUE, 
+	Offense text NOT NULL, 
+	Penalty text NOT NULL, 
+	DateOfOffense text NOT NULL, 
+	PlaceOfOffense text NOT NULL, 
+	APid text NOT NULL, 
+	FOREIGN KEY (APid) REFERENCES Arrestedpeople (APid), 
+	PRIMARY KEY (Cid, APid)
+); 
+CREATE TABLE Evidence (
+	EVid text NOT NULL UNIQUE, 
+	TypeOfEvidence text NOT NULL, 
+	Description text NOT NULL, 
+	Cid text NOT NULL, 
+	FOREIGN KEY (Cid) REFERENCES Cases (Cid), 
+	PRIMARY KEY (EVid, Cid) 
+);
+CREATE TABLE PatrolRoutes (
+	PRid text NOT NULL, 
+	PRDescription text NOT NULL, 
+	Oid text NOT NULL, 
+	FOREIGN KEY (Oid) REFERENCES Officers (Oid), 
+	PRIMARY KEY (PRid, Oid)
+);
+INSERT INTO cities (Zipcode, City)
+	Values('86754', 'Coddington Township');
+INSERT INTO cities (Zipcode, City)
+	Values('95855', 'Data Ridge');
+INSERT INTO cities (Zipcode, City)
+	Values('95854', 'Selecton');
+
+INSERT INTO people (Pid,  FirstName,  LastName,  DateOfBirth,  Address,  Zipcode)
+	VALUES('A001',  'Belike',  'Bill',  '04/20/1986',  '12 Awesome Rd',  '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A002', 'Bill', 'Bill', '04/20/1986', '13 Awesome Rd', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A003', 'Have', 'Bill', '04/20/1986', '14 Awesome Rd', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A004', 'An', 'Bill', '09/12/1983', '15 Awesome Rd', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A005', 'Awesome', 'Bill', '09/12/1983', '16 Awesome Rd', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A006', 'Hat', 'Bill', '09/12/1983', '17 Awesome Rd', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A007', 'Pablo', 'Rivas', '06/15/1984', '69 Database Blvd', '95854');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A008', 'Henry', 'Alopiza', '10/02/1976', '2 Little Wood Rd', '95855');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A009', 'Magarita', 'Piza', '01/29/1988', '79 Main St', '95854');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A010', 'Sal', 'Diracki', '08/17/1968', '1 Enigo Ave', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A011', 'Inigo', 'Montoya', '03/06/1977', '34 Mellamoes Rd', '95855');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A012', 'Lily', 'Vasdina', '04/13/1966', '11 Awesome Rd', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A013', 'Jefferey', 'O Doyle', '03/18/1991', '103 Database Blvd', '95854');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A014', 'Lee', 'Choo', '12/24/1983', '25 Codd St', '95855');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A015', 'Michael', 'Wittensberg', '08/01/1985', '28 Balabras Rd', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A016', 'Magic', 'Johnson', '03/31/1975', '20 Awesome Rd', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A017', 'Jackie', 'Baliz', '05/21/1992', '22 Main St', '95854');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A018', 'Alace', 'Johnson', '10/31/1981', '22 Awesome Rd', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A019', 'Johnny', 'Jones', '02/29/1986', '28 Codd St', '95855');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A020', 'Jimmy', 'Crowley', '09/21/1975', '2 Mellamoes Rd', '95855');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A021', 'Sarah', 'Goodman', '11/26/1988', '3 Enigo Ave', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A022', 'Alejandro', 'Menedez', '07/19/1988', '72 Database Blvd', '95855');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A023', 'Vladamir', 'Rusikov', '11/01/1979', '46 Balabras Rd', '86754');
+INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
+	VALUES('A024', 'John', 'Cena', '04/03/1977', '1 Mellamoes Rd', '95855');
+
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E001', '02/21/2005', '', '28, 000', 'Janitor', 'A020');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E002', '03/13/2005', '', '28, 000', 'Janitor', 'A001');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E003', '08/24/2005', '', '50, 000', 'Police Officer', 'A021');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E004', '12/21/2004', '', '50, 000', 'Police Officer', 'A002');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E005', '01/01/2006', '', '50, 000', 'Police Officer', 'A009');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E006', '06/15/2005', '', '52, 000', 'Police Officer', 'A011');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E007', '07/18/1984', '', '62, 000', 'Police Officer', 'A012');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E008', '07/10/1987', '', '69, 000', 'Police Officer', 'A010');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E009', '02/21/2001', '', '54, 000', 'Police Officer', 'A017');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E010', '02/21/2003', '', '50, 000', 'Police Officer', 'A004');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E011', '02/21/2002', '', '57, 000', 'Police Officer', 'A003');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E012', '02/21/1994', '', '59, 000', 'Police Officer', 'A013');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E013', '02/21/2005', '', '54, 000', 'Police Officer', 'A018');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E014', '12/21/2005', '', '54, 000', 'Police Officer', 'A016');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E015', '011/09/2004', '', '52, 000', 'Police Officer', 'A015');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E016', '01/17/2007', '', '50, 000', 'Police Officer', 'A008');
+INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
+	Values('E017', '05/04/2003', '', '42, 000', 'Mechanic', 'A006');
+
+INSERT INTO Areas (Aid, AreaDescription)
+	VALUES('AR01', 'Offices');
+INSERT INTO Areas (Aid, AreaDescription)
+	VALUES('AR02', 'Locker Room');
+INSERT INTO Areas (Aid, AreaDescription)
+	VALUES('AR03', 'Holding Cells');
+INSERT INTO Areas (Aid, AreaDescription)
+	VALUES('AR04', 'Armory');
+INSERT INTO Areas (Aid, AreaDescription)
+	VALUES('AR05', 'Parking Lot');
+INSERT INTO Areas (Aid, AreaDescription)
+	VALUES('AR06', 'Storage Room');
+INSERT INTO Areas (Aid, AreaDescription)
+	VALUES('AR07', 'Off the Premises');
+
+INSERT INTO cells (CEid, Aid)
+	VALUES('CE01', 'AR03');
+INSERT INTO cells (CEid, Aid)
+	VALUES('CE02', 'AR03');
+INSERT INTO cells (CEid, Aid)
+	VALUES('CE03', 'AR03');
+
+INSERT INTO Arrestedpeople (APid, Height, Weight, HairColor, CEid, Pid)
+	VALUES('AP01', '5ft 7in', '168lbs', 'Brown', 'CE02', 'A005');
+INSERT INTO Arrestedpeople (APid, Height, Weight, HairColor, CEid, Pid)
+	VALUES('AP02', '6ft 0in', '201lbs', 'Black', 'CE01', 'A007');
+INSERT INTO Arrestedpeople (APid, Height, Weight, HairColor, CEid, Pid)
+	VALUES('AP03', '4ft 11in', '147lbs', 'Brown', 'CE02', 'A014');
+INSERT INTO Arrestedpeople (APid, Height, Weight, HairColor, CEid, Pid)
+	VALUES('AP04', '5ft 3in', '159lbs', 'Red', 'CE02', 'A019');
+INSERT INTO Arrestedpeople (APid, Height, Weight, HairColor, CEid, Pid)
+	VALUES('AP05', '5ft 9in', '185lbs', 'Brown', 'CE02', 'A022');
+INSERT INTO Arrestedpeople (APid, Height, Weight, HairColor, CEid, Pid)
+	VALUES('AP06', '6ft 3in', '227lbs', 'Blonde', 'CE02', 'A023');
+INSERT INTO Arrestedpeople (APid, Height, Weight, HairColor, CEid, Pid)
+	VALUES('AP07', '6ft 1in', '251lbs', 'Brown', 'CE03', 'A024');
+
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O01', 'Yes', 'Yes', 'Patrol Officer', 'E003');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O02', 'Yes', 'Yes', 'Patrol Officer', 'E004');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O03', 'Yes', 'Yes', 'Patrol Officer', 'E005');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O04', 'No', 'Yes', 'Corporal', 'E006');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O05', 'No', 'Yes', 'Lieutenant', 'E007');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O06', 'No', 'Yes', 'Chief', 'E008');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O07', 'No', 'Yes', 'Sergeant', 'E009');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O08', 'Yes', 'Yes', 'Patrol Officer', 'E010');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O09', 'No', 'Yes', 'Senior Sergeant', 'E011');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O10', 'No', 'Yes', 'Senior Sergeant', 'E012');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O11', 'No', 'Yes', 'Sergeant', 'E013');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O12', 'No', 'Yes', 'Sergeant', 'E014');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O13', 'No', 'Yes', 'Corporal', 'E015');
+INSERT INTO Officers (Oid, OnPatrol, Armed, Rank, Eid)
+	VALUES('O14', 'Yes', 'Yes', 'Patrol Officer', 'E016');
+
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT01', '8AM to 8PM', 'E001', 'AR01');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT02', '8AM to 8PM', 'E002', 'AR03');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT03', '8AM to 8PM', 'E006', 'AR01');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT04', '8AM to 8PM', 'E015', 'AR01');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT05', '8AM to 8PM', 'E013', 'AR01');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT06', '8AM to 8PM', 'E014', 'AR01');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT07', '8AM to 8PM', 'E007', 'AR01');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT08', '8AM to 8PM', 'E008', 'AR01');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT09', '8AM to 8PM', 'E009', 'AR03');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT10', '8AM to 8PM', 'E011', 'AR04');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT11', '8AM to 8PM', 'E012', 'AR06');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT12', '8AM to 8PM', 'E016', 'AR07');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT13', '8AM to 8PM', 'E010', 'AR07');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT14', '8AM to 8PM', 'E003', 'AR07');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT15', '8PM to 8AM', 'E004', 'AR07');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT16', '8PM to 8AM', 'E005', 'AR07');
+INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
+	VALUES('WT17', '8AM to 8PM', 'E017', 'AR05');
+
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
+	VALUES('C01', 'Arson', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP01');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
+	VALUES('C07', 'Arson', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP04');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
+	VALUES('C08', 'Arson', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP03');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
+	VALUES('C02', 'Disturbing the Peace', 'Fined', '4/20/2015', 'Data Ridge', 'AP02');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
+	VALUES('C03', 'Grand Theft Auto', 'Imprisonment', '2/11/2014', 'Selecton', 'AP05');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
+	VALUES('C09', '1st Degree Murder', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP01');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
+	VALUES('C10', '1st Degree Murder', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP04');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
+	VALUES('C04', '1st Degree Murder', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP03');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
+	VALUES('C05', 'Vandalism', 'Fined', '11/22/2012', 'Selecton', 'AP07');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
+	VALUES('C06', 'Tax Evasion', 'Imprisonment', '08/15/2011', 'Data Ridge', 'AP06');
+
+INSERT INTO Evidence (EVid, TypeOfEvidence, Description, Cid)
+	VALUES('EV01', 'Eye Witness', 'Suspect was making bad puns about cods', 'C02');
+INSERT INTO Evidence (EVid, TypeOfEvidence, Description, Cid)
+	VALUES('EV02', 'Video Tape', 'Shows suspects Setting fire to building', 'C01');
+INSERT INTO Evidence (EVid, TypeOfEvidence, Description, Cid)
+	VALUES('EV03', 'Eye Witness', 'First Responders found burnt bodies in the burned out building', 'C04');
+INSERT INTO Evidence (EVid, TypeOfEvidence, Description, Cid)
+	VALUES('EV04', 'Documents', 'Documents of an audit of the suspect showing that they commited tax evasion', 'C06');
+INSERT INTO Evidence (EVid, TypeOfEvidence, Description, Cid)
+	VALUES('EV05', 'Picture', 'Picture of vadalism with suspects name signed next to it', 'C05');
+
+INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
+	VALUES('EQ01', 'Gun', 'Yes', 'Yes', 'O01', 'AR04');
+INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
+	VALUES('EQ02', 'Gun', 'Yes', 'Yes', 'O02', 'AR04');
+INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
+	VALUES('EQ03', 'Gun', 'Yes', 'Yes', 'O03', 'AR04');
+INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
+	VALUES('EQ04', 'Gun', 'Yes', 'No', 'O08', 'AR04');
+INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
+	VALUES('EQ05', 'Gun', 'No', 'No', 'O08', 'AR04');
+INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
+	VALUES('EQ06', 'Car', 'Yes', 'Yes', 'O01', 'AR06');
+INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
+	VALUES('EQ07', 'Car', 'No', 'No', 'O08', 'AR06');
+INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
+	VALUES('EQ08', 'Kevlar Vest', 'Yes', 'Yes', 'O01', 'AR02');
+INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
+	VALUES('EQ09', 'Kevlar Vest', 'Yes', 'Yes', 'O02', 'AR02');
+INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
+	VALUES('EQ10', 'Kevlar Vest', 'Yes', 'No', 'O03', 'AR02');
+INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
+	VALUES('EQ11', 'Kevlar Vest', 'No', 'No', 'O08', 'AR02');
+
+INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
+	VALUES('PR01', 'Coddington Township Awesome Rd to Enigo Ave', 'O01');
+INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
+	VALUES('PR01', 'Coddington Township Awesome Rd to Enigo Ave', 'O08');
+INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
+	VALUES('PR02', 'Coddington Township Awesome Rd to Balabras Rd', 'O01');
+INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
+	VALUES('PR02', 'Coddington Township Awesome Rd to Balabras Rd', 'O08');
+INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
+	VALUES('PR03', 'Data Ridge Mellamoes Rd to Little Wood Rd', 'O02');
+INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
+	VALUES('PR03', 'Data Ridge Mellamoes Rd to Little Wood Rd', 'O03');
+INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
+	VALUES('PR04', 'Data Ridge Litle Wood to Codd St', 'O03');
+INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
+	VALUES('PR04', 'Data Ridge Litle Wood to Codd St', 'O02');
+INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
+	VALUES('PR05', 'Selecton Database Blvd to Main St','O14');	
+
+Select *
+From WorkingTimes;
+
+Select *
+From officers;
+
+Create View ArrestedSuspects AS 
+  Select FirstName, LastName, ArrestedPeople.Ceid as CellNumber
+  From people
+  Inner join ArrestedPeople
+  ON people.pid = ArrestedPeople.pid
+  Inner join Cells
+  ON Cells.Ceid = ArrestedPeople.Ceid;
+
+  Select *
+  From ArrestedSuspects;
+
+  drop view WhoBrokeIt;
+  Create View WhoBrokeIt as 
+  Select FirstName, LastName, Officers.Oid as OfficerID, Equipment.Eqid as EquipmentID, Equipment.TypeOfEquipment as EquipmentType 
+  From People
+  Inner Join Employees
+  On people.pid = employees.pid
+  inner join Officers
+  On employees.eid = Officers.eid
+  inner join equipment
+  On officers.Oid = Equipment.oid
+  Where Equipment.working = 'No'; 
+
+  Select *
+  from WhoBrokeIt;
+
+  Create View WhoPatrolsWhat as
+  Select FirstName, LastName, Officers.Oid as OfficerID, PatrolRoutes.PRDescription as PatrolRoute
+  from people
+  inner join employees
+  ON people.pid = employees.pid
+  inner join officers
+  ON employees.eid = officers.eid
+  inner join PatrolRoutes
+  ON officers.Oid = PatrolRoutes.Oid
+  Order by Officers.Oid;
+
+  select*
+  from WhoPatrolsWhat;
+
+Create Trigger AddPoliceOfficer
+After Insert on Employees
+For Each Row 
+Execute Procedure AddWorkHours(); 
+
+
+Create Or Replace Function AddWorkHours() Returns Trigger AS $$
+Begin
+	IF NEW.Positions = ‘Police Officer’ THEN
+		Insert Into WorkingTimes (Eid) VALUES (NEW.Eid);
+	END IF;
+	RETURN NEW;
+END;
+$$ 
+Language plpgsql;
+
+
+
+(Select count(Eid) as PoliceCount
+from employees
+where positions='Police Officer') as decimal(5,2)/
+(Select count(Eid) as EmployeeCount
+from employees);
+
+
+Admin Role
+	Create Role Admin;
+	Grant all on all tables 
+	In schema public
+	To Admin;
+Employees Role
+	Create Role Employees;
+	Grants Select On People, Employees, Officers, ArrestedPeople, Cells, Equipment, PatrolRoutes, WorkingTimes, Areas, Cases, and Evidence
+	To Employees;
+	Grants Insert On ArrestedPeople, Cases, Evidence, and Equipment 
+	To Employees;
+	Grants Update On ArrestedPeople, PatrolRoutes, WorkingTimes, People, Officers, and Employees
+	To Employees;
