@@ -10,6 +10,9 @@ DROP TABLE IF EXISTS WorkingTimes;
 DROP TABLE IF EXISTS Areas;
 DROP TABLE IF EXISTS Cases;
 DROP TABLE IF EXISTS Evidence;
+DROP TABLE IF EXISTS PatrolTeams;
+DROP TABLE IF EXISTS CasePeople;
+
 
 CREATE TABLE cities (
 	Zipcode text NOT NULL UNIQUE, 
@@ -30,7 +33,7 @@ CREATE TABLE Employees (
 	Eid text NOT NULL UNIQUE, 
 	DateEmployed text NOT NULL, 
 	DateUnemployed text, 
-	SalaryUSD text NOT NULL, 
+	SalaryUSD INT NOT NULL, 
 	Positions text NOT NULL, 
 	Pid text NOT NULL, 
 	FOREIGN KEY (Pid) REFERENCES people (Pid), 
@@ -93,9 +96,7 @@ CREATE TABLE Cases (
 	Penalty text NOT NULL, 
 	DateOfOffense text NOT NULL, 
 	PlaceOfOffense text NOT NULL, 
-	APid text NOT NULL, 
-	FOREIGN KEY (APid) REFERENCES Arrestedpeople (APid), 
-	PRIMARY KEY (Cid, APid)
+	PRIMARY KEY (Cid)
 ); 
 CREATE TABLE Evidence (
 	EVid text NOT NULL UNIQUE, 
@@ -106,11 +107,23 @@ CREATE TABLE Evidence (
 	PRIMARY KEY (EVid, Cid) 
 );
 CREATE TABLE PatrolRoutes (
-	PRid text NOT NULL, 
-	PRDescription text NOT NULL, 
-	Oid text NOT NULL, 
-	FOREIGN KEY (Oid) REFERENCES Officers (Oid), 
-	PRIMARY KEY (PRid, Oid)
+	PRid text NOT NULL UNIQUE, 
+	PRDescription text NOT NULL,  
+	PRIMARY KEY (PRid)
+);
+CREATE TABLE PatrolTeams (
+	Oid text NOT NULL,
+	PRid text NOT NULL,
+	FOREIGN KEY (Oid) REFERENCES Officers (Oid),
+	FOREIGN KEY (PRid) REFERENCES PatrolRoutes(PRid),
+	PRIMARY KEY (Oid, PRid)
+);
+CREATE TABLE CasePeople (
+	Cid text NOT NULL,
+	APid text NOT NULL,
+	FOREIGN KEY (Cid) REFERENCES Cases (Cid),
+	FOREIGN KEY (APid) REFERENCES ArrestedPeople (APid),
+	PRIMARY KEY (Cid, APid)
 );
 INSERT INTO cities (Zipcode, City)
 	Values('86754', 'Coddington Township');
@@ -169,39 +182,56 @@ INSERT INTO people (Pid, FirstName, LastName, DateOfBirth, Address, Zipcode)
 	VALUES('A024', 'John', 'Cena', '04/03/1977', '1 Mellamoes Rd', '95855');
 
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E001', '02/21/2005', '', '28, 000', 'Janitor', 'A020');
+	Values('E001', '02/21/2005', '', '28000', 'Janitor', 'A020');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E002', '03/13/2005', '', '28, 000', 'Janitor', 'A001');
+	Values('E002', '03/13/2005', '', '28000', 'Janitor', 'A001');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E003', '08/24/2005', '', '50, 000', 'Police Officer', 'A021');
+	Values('E003', '08/24/2005', '', '50000', 'Police Officer', 'A021');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E004', '12/21/2004', '', '50, 000', 'Police Officer', 'A002');
+	Values('E004', '12/21/2004', '', '50000', 'Police Officer', 'A002');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E005', '01/01/2006', '', '50, 000', 'Police Officer', 'A009');
+	Values('E005', '01/01/2006', '', '50000', 'Police Officer', 'A009');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E006', '06/15/2005', '', '52, 000', 'Police Officer', 'A011');
+	Values('E006', '06/15/2005', '', '52000', 'Police Officer', 'A011');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E007', '07/18/1984', '', '62, 000', 'Police Officer', 'A012');
+	Values('E007', '07/18/1984', '', '62000', 'Police Officer', 'A012');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E008', '07/10/1987', '', '69, 000', 'Police Officer', 'A010');
+	Values('E008', '07/10/1987', '', '69000', 'Police Officer', 'A010');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E009', '02/21/2001', '', '54, 000', 'Police Officer', 'A017');
+	Values('E009', '02/21/2001', '', '54000', 'Police Officer', 'A017');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E010', '02/21/2003', '', '50, 000', 'Police Officer', 'A004');
+	Values('E010', '02/21/2003', '', '50000', 'Police Officer', 'A004');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E011', '02/21/2002', '', '57, 000', 'Police Officer', 'A003');
+	Values('E011', '02/21/2002', '', '57000', 'Police Officer', 'A003');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E012', '02/21/1994', '', '59, 000', 'Police Officer', 'A013');
+	Values('E012', '02/21/1994', '', '59000', 'Police Officer', 'A013');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E013', '02/21/2005', '', '54, 000', 'Police Officer', 'A018');
+	Values('E013', '02/21/2005', '', '54000', 'Police Officer', 'A018');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E014', '12/21/2005', '', '54, 000', 'Police Officer', 'A016');
+	Values('E014', '12/21/2005', '', '54000', 'Police Officer', 'A016');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E015', '011/09/2004', '', '52, 000', 'Police Officer', 'A015');
+	Values('E015', '11/09/2004', '', '52000', 'Police Officer', 'A015');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E016', '01/17/2007', '', '50, 000', 'Police Officer', 'A008');
+	Values('E016', '01/17/2007', '', '50000', 'Police Officer', 'A008');
 INSERT INTO Employees (Eid, DateEmployed, DateUnemployed, SalaryUSD, Positions, Pid)
-	Values('E017', '05/04/2003', '', '42, 000', 'Mechanic', 'A006');
+	Values('E017', '05/04/2003', '', '42000', 'Mechanic', 'A006');
+
+Create Trigger AddPoliceOfficer
+After Insert on Employees
+For Each Row 
+Execute Procedure AddWorkHours();
+
+Create Or Replace Function AddWorkHours(refcursor) Returns refcursor AS $$
+Declare
+ p refcursor = $1;
+Begin
+	IF NEW.Positions = ‘Police Officer’ THEN
+		Insert Into WorkingTimes (Eid) VALUES (NEW.Eid);
+	END IF;
+	RETURN p;
+END;
+$$ 
+Language plpgsql;
 
 INSERT INTO Areas (Aid, AreaDescription)
 	VALUES('AR01', 'Offices');
@@ -304,26 +334,18 @@ INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
 INSERT INTO WorkingTimes (WTid, Hours, Eid, Aid)
 	VALUES('WT17', '8AM to 8PM', 'E017', 'AR05');
 
-INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
-	VALUES('C01', 'Arson', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP01');
-INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
-	VALUES('C07', 'Arson', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP04');
-INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
-	VALUES('C08', 'Arson', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP03');
-INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
-	VALUES('C02', 'Disturbing the Peace', 'Fined', '4/20/2015', 'Data Ridge', 'AP02');
-INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
-	VALUES('C03', 'Grand Theft Auto', 'Imprisonment', '2/11/2014', 'Selecton', 'AP05');
-INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
-	VALUES('C09', '1st Degree Murder', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP01');
-INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
-	VALUES('C10', '1st Degree Murder', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP04');
-INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
-	VALUES('C04', '1st Degree Murder', 'Imprisonment', '03/19/2013', 'Coddington Township', 'AP03');
-INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
-	VALUES('C05', 'Vandalism', 'Fined', '11/22/2012', 'Selecton', 'AP07');
-INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense, APid)
-	VALUES('C06', 'Tax Evasion', 'Imprisonment', '08/15/2011', 'Data Ridge', 'AP06');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense)
+	VALUES('C01', 'Arson', 'Imprisonment', '03/19/2013', 'Coddington Township');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense)
+	VALUES('C02', 'Disturbing the Peace', 'Fined', '4/20/2015', 'Data Ridge');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense)
+	VALUES('C03', 'Grand Theft Auto', 'Imprisonment', '2/11/2014', 'Selecton');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense)
+	VALUES('C04', '1st Degree Murder', 'Imprisonment', '03/19/2013', 'Coddington Township');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense)
+	VALUES('C05', 'Vandalism', 'Fined', '11/22/2012', 'Selecton');
+INSERT INTO Cases (Cid, Offense, Penalty, DateOfOffense, PlaceOfOffense)
+	VALUES('C06', 'Tax Evasion', 'Imprisonment', '08/15/2011', 'Data Ridge');
 
 INSERT INTO Evidence (EVid, TypeOfEvidence, Description, Cid)
 	VALUES('EV01', 'Eye Witness', 'Suspect was making bad puns about cods', 'C02');
@@ -359,28 +381,98 @@ INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
 INSERT INTO Equipment (EQid, TypeOfEquipment, Working, InUse, Oid, Aid)
 	VALUES('EQ11', 'Kevlar Vest', 'No', 'No', 'O08', 'AR02');
 
-INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
-	VALUES('PR01', 'Coddington Township Awesome Rd to Enigo Ave', 'O01');
-INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
-	VALUES('PR01', 'Coddington Township Awesome Rd to Enigo Ave', 'O08');
-INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
-	VALUES('PR02', 'Coddington Township Awesome Rd to Balabras Rd', 'O01');
-INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
-	VALUES('PR02', 'Coddington Township Awesome Rd to Balabras Rd', 'O08');
-INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
-	VALUES('PR03', 'Data Ridge Mellamoes Rd to Little Wood Rd', 'O02');
-INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
-	VALUES('PR03', 'Data Ridge Mellamoes Rd to Little Wood Rd', 'O03');
-INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
-	VALUES('PR04', 'Data Ridge Litle Wood to Codd St', 'O03');
-INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
-	VALUES('PR04', 'Data Ridge Litle Wood to Codd St', 'O02');
-INSERT INTO PatrolRoutes (PRid, PRDescription, Oid)
-	VALUES('PR05', 'Selecton Database Blvd to Main St','O14');	
+INSERT INTO PatrolRoutes (PRid, PRDescription)
+	VALUES('PR01', 'Coddington Township Awesome Rd to Enigo Ave');
+INSERT INTO PatrolRoutes (PRid, PRDescription)
+	VALUES('PR02', 'Coddington Township Awesome Rd to Balabras Rd');
+INSERT INTO PatrolRoutes (PRid, PRDescription)
+	VALUES('PR03', 'Data Ridge Mellamoes Rd to Little Wood Rd');
+INSERT INTO PatrolRoutes (PRid, PRDescription)
+	VALUES('PR04', 'Data Ridge Litle Wood to Codd St');
+INSERT INTO PatrolRoutes (PRid, PRDescription)
+	VALUES('PR05', 'Selecton Database Blvd to Main St');
 
+INSERT INTO PatrolTeams (Oid,PRid)
+	VALUES('O01','PR01');
+INSERT INTO PatrolTeams (Oid,PRid)
+	VALUES('O08','PR01');
+INSERT INTO PatrolTeams (Oid,PRid)
+	VALUES('O01','PR02');
+INSERT INTO PatrolTeams (Oid,PRid)
+	VALUES('O08','PR02');
+INSERT INTO PatrolTeams (Oid,PRid)
+	VALUES('O02','PR03');
+INSERT INTO PatrolTeams (Oid,PRid)
+	VALUES('O03','PR03');
+INSERT INTO PatrolTeams (Oid,PRid)
+	VALUES('O02','PR04');
+INSERT INTO PatrolTeams (Oid,PRid)
+	VALUES('O03','PR04');
+INSERT INTO PatrolTeams (Oid,PRid)
+	VALUES('O14','PR05');
+
+INSERT INTO CasePeople (Cid, APid)
+	VALUES('C01','AP01');
+INSERT INTO CasePeople (Cid, APid)
+	VALUES('C01','AP03');
+INSERT INTO CasePeople (Cid, APid)
+	VALUES('C01','AP04');
+INSERT INTO CasePeople (Cid, APid)
+	VALUES('C02','AP02');
+INSERT INTO CasePeople (Cid, APid)
+	VALUES('C03','AP05');
+INSERT INTO CasePeople (Cid, APid)
+	VALUES('C04','AP01');
+INSERT INTO CasePeople (Cid, APid)
+	VALUES('C04','AP03');
+INSERT INTO CasePeople (Cid, APid)
+	VALUES('C04','AP04');
+INSERT INTO CasePeople (Cid, APid)
+	VALUES('C05','AP07');
+INSERT INTO CasePeople (Cid, APid)
+	VALUES('C06','AP06');
+
+	
 Select *
-From WorkingTimes;
+From Employees;
 
+Select TRUNC (
+	CAST((SELECT COUNT(Eid) as PoliceCount
+	      FROM Employees
+	      WHERE positions = 'Police Officer') as DECIMAL(5,2)
+	    ) / 
+	     (SELECT COUNT(Eid) as EmployeeCount
+	      FROM Employees) * 100) as PercentPolice
+
+Select TRUNC (
+	CAST((SELECT COUNT(Pid) as WherePeopleLive
+	      FROM People
+	      INNER JOIN Cities ON
+	      People.Zipcode = Cities.Zipcode
+	      WHERE city = 'Data Ridge') as DECIMAL(5,2)
+	    ) / 
+	     (SELECT COUNT(Pid) as People
+	      FROM People) * 100) as DataRidgePeople
+
+Select TRUNC (
+	CAST((SELECT COUNT(Pid) as WherePeopleLive
+	      FROM People
+	      INNER JOIN Cities ON
+	      People.Zipcode = Cities.Zipcode
+	      WHERE city = 'Selecton') as DECIMAL(5,2)
+	    ) / 
+	     (SELECT COUNT(Pid) as People
+	      FROM People) * 100) as SelectonPeople
+
+Select TRUNC (
+	CAST((SELECT COUNT(Pid) as WherePeopleLive
+	      FROM People
+	      INNER JOIN Cities ON
+	      People.Zipcode = Cities.Zipcode
+	      WHERE city = 'Coddington Township') as DECIMAL(5,2)
+	    ) / 
+	     (SELECT COUNT(Pid) as People
+	      FROM People) * 100) as CoddingtonPeople
 Select *
 From officers;
 
@@ -393,7 +485,7 @@ Create View ArrestedSuspects AS
   ON Cells.Ceid = ArrestedPeople.Ceid;
 
   Select *
-  From ArrestedSuspects;
+  From WorkingTimes;
 
   drop view WhoBrokeIt;
   Create View WhoBrokeIt as 
@@ -430,7 +522,7 @@ For Each Row
 Execute Procedure AddWorkHours(); 
 
 
-Create Or Replace Function AddWorkHours() Returns Trigger AS $$
+/*Create Or Replace Function AddWorkHours() Returns Trigger AS $$
 Begin
 	IF NEW.Positions = ‘Police Officer’ THEN
 		Insert Into WorkingTimes (Eid) VALUES (NEW.Eid);
@@ -438,17 +530,29 @@ Begin
 	RETURN NEW;
 END;
 $$ 
+Language plpgsql;*/
+
+Create Or Replace Function AddWorkHours(refcursor) Returns refcursor AS $$
+Declare
+ p refcursor = $1;
+Begin
+	IF NEW.Positions = ‘Police Officer’ THEN
+		Insert Into WorkingTimes (Eid) VALUES (NEW.Eid);
+	END IF;
+	RETURN p;
+END;
+$$ 
 Language plpgsql;
 
 
 
-(Select count(Eid) as PoliceCount
+Select(Select count(Eid) as PoliceCount
 from employees
-where positions='Police Officer') as decimal(5,2)/
+where positions='Police Officer')
 (Select count(Eid) as EmployeeCount
 from employees);
 
-
+Select(Policecount/employeecount);
 Admin Role
 	Create Role Admin;
 	Grant all on all tables 
